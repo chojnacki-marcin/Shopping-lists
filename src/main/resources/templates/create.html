@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create a shopping list</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+    <form method="post" th:action="@{''}" th:object="${shoppingList}">
+        <label>
+            Name: <input type="text" th:field="*{name}"/>
+        </label> <br />
+
+        <input type="submit">
+    </form>
+</body>
+</html>

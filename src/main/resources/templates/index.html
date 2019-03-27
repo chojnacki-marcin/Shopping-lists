@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Shopping list</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" th:href="@{/css/index.css}" />
+</head>
+<body>
+    <h1>Shopping list</h1>
+    <h2><a th:href="@{/shopping-list}">Create a new shopping list</a></h2>
+    <h2>Your shopping lists</h2>
+    <ul th:each="list : ${shoppingLists}">
+        <li><a th:text="${list.name}" th:href="@{|/shopping-list/${list.id}|}"></a> </li>
+    </ul>
+    <form th:action="@{/logout}" method="post">
+        <input class="logout" type="submit" value="Sign out"/>
+    </form>
+</body>
+</html>
