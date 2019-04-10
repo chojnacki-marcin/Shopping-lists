@@ -37,15 +37,13 @@ public class ShoppingListController {
 
     @GetMapping
     public String showEmptyShoppingListForm(ShoppingList shoppingList){
-//        List<Item> items = new ArrayList<>();
-//        model.addAttribute(items);
         return "create";
     }
 
     @PostMapping
     public String createShoppingList(ShoppingList shoppingList, @AuthenticationPrincipal Account account){
         shoppingListService.saveShoppingList(shoppingList, account);
-        return "redirect:/shopping-list/" + shoppingList.getId();
+        return String.format("redirect:/shopping-list/%d",shoppingList.getId());
     }
 
 
@@ -64,13 +62,11 @@ public class ShoppingListController {
     @PostMapping("{id}")
     public String modifyShoppingList(@PathVariable long id, ShoppingList shoppingList, @AuthenticationPrincipal Account account){
         shoppingListService.saveShoppingList(shoppingList, account);
-        return "redirect:/shopping-list/" + id;
+        return String.format("redirect:/shopping-list/%d", id);
     }
 
     @RequestMapping(value = "{id}", params = {"addItem"})
     public String addItem(@PathVariable long id, ShoppingList shoppingList, BindingResult bindingResult){
-//        Optional<ShoppingList> shoppingList = shoppingListService.findById(id);
-//        shoppingList.ifPresent(s -> s.getItems().add(new Item()));
         if(shoppingList.getItems() == null){
             shoppingList.setItems(Collections.singletonList(new Item()));
         }
@@ -87,6 +83,6 @@ public class ShoppingListController {
             shoppingList.getItems().remove(itemNumber);
             shoppingListService.saveShoppingList(shoppingList, account);
         }
-        return "redirect:/shopping-list/" + id;
+        return String.format("redirect:/shopping-list/%d", id);
     }
 }

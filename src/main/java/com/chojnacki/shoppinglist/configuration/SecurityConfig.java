@@ -43,24 +43,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .invalidateHttpSession(true)
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login");
-//                .and()
-//                    .formLogin()
-//                        .loginPage("/login")
-//                            .permitAll();
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-            auth
-                .inMemoryAuthentication()
-                    .withUser("admin@admin.pl").password("{noop}admin").roles("ADMIN");
+    protected void configure(AuthenticationManagerBuilder auth) {
             auth.authenticationProvider(authenticationProvider);
 
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider(AccountService accountService){
-        DaoAuthenticationProvider provider =new DaoAuthenticationProvider();
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(accountService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
@@ -75,8 +68,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AccountService accountUserService(AccountRepository accountRepository){
         return new AccountService(accountRepository);
     }
-
-
-
 
 }
