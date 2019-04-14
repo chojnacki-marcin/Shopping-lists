@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{shared/layout.html}">
 <head>
     <title>Sign in</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body>
-<form th:action="@{/login}" method="post">
-    <div><label> User Name : <input type="email" name="username"/> </label></div>
-    <div><label> Password: <input type="password" name="password"/> </label></div>
-    <div><input type="submit" value="Sign In"/></div>
-    <div><a th:href="@{/register}">Register </a> </div>
-</form>
+<section layout:fragment="content">
+    <form th:action="@{/login}" method="post">
+        <div><label> User Name : <input type="email" name="username"/> </label></div>
+        <div><label> Password: <input type="password" name="password"/> </label></div>
+        <div><input type="submit" value="Sign In"/></div>
+        <div><a th:href="@{/register}">Register </a> </div>
+    </form>
+</section>
 </body>
 </html>
