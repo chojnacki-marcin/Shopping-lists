@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{shared/logged-in-layout.html}">
 <head>
     <title th:text="'Shopping list '"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body>
+<section layout:fragment="content">
     <form th:action="@{''}" method="post" th:object="${shoppingList}">
         <label>
             Name: <input type="text" th:field="*{name}"/>
@@ -19,5 +20,6 @@
         </div>
         <input type="submit">
     </form>
+</section>
 </body>
 </html>

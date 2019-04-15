@@ -1,19 +1,37 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{shared/logged-in-layout.html}">
 <head>
     <title>Shopping list</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" th:href="@{/css/index.css}" />
 </head>
 <body>
-    <h1>Shopping list</h1>
+<section layout:fragment="content">
     <h2><a th:href="@{/shopping-list}">Create a new shopping list</a></h2>
-    <h2>Your shopping lists</h2>
-    <ul th:each="list : ${shoppingLists}">
-        <li><a th:text="${list.name}" th:href="@{|/shopping-list/${list.id}|}"></a> </li>
-    </ul>
-    <form th:action="@{/logout}" method="post">
-        <input class="logout" type="submit" value="Sign out"/>
-    </form>
+
+    <div th:if="${!shoppingLists.isEmpty()}">
+        <h2>Your shopping lists</h2>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Updated</th>
+                <th scope="col">Created</th>
+                <th scope="col">Edit</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="list : ${shoppingLists}">
+                <th scope="row" th:text="${list.name}"></th>
+                <td th:text="${list.recentUpdate}"></td>
+                <td th:text="${list.creationDate}">Otto</td>
+                <td><a th:href="@{|/shopping-list/${list.id}|}">
+                    <img th:src="@{/images/icons_edit.svg}"/>
+                </a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</section>
 </body>
 </html>
