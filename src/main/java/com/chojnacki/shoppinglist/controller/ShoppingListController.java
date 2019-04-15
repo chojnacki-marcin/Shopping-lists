@@ -60,12 +60,14 @@ public class ShoppingListController {
     }
 
     @PostMapping("{id}")
+    @PreAuthorize("@securityService.isOwner(authentication, #shoppingList.id)")
     public String modifyShoppingList(@PathVariable long id, ShoppingList shoppingList, @AuthenticationPrincipal Account account){
         shoppingListService.saveShoppingList(shoppingList, account);
         return String.format("redirect:/shopping-list/%d", id);
     }
 
     @RequestMapping(value = "{id}", params = {"addItem"})
+    @PreAuthorize("@securityService.isOwner(authentication, #shoppingList.id)")
     public String addItem(@PathVariable long id, ShoppingList shoppingList, BindingResult bindingResult){
         if(shoppingList.getItems() == null){
             shoppingList.setItems(Collections.singletonList(new Item()));
@@ -77,10 +79,14 @@ public class ShoppingListController {
     }
 
     @RequestMapping(value = "{id}", params = {"removeItem"})
+    @PreAuthorize("@securityService.isOwner(authentication, #shoppingList.id)")
     public String removeItem(@PathVariable long id, ShoppingList shoppingList, BindingResult bindingResult, HttpServletRequest httpServletRequest, @AuthenticationPrincipal Account account){
         int itemNumber = Integer.valueOf(httpServletRequest.getParameter("removeItem"));
-        if(shoppingList.getItems() != null && !shoppingList.getItems().isEmpty() && itemNumber >= 0 && itemNumber < shoppingList.getItems().size()){
+        if(shoppingList.getItems() != null && !shoppingList.getItems().isEmpty()
+                && itemNumber >= 0 && itemNumber < shoppingList.getItems().size()){
+
             shoppingList.getItems().remove(itemNumber);
+
             shoppingListService.saveShoppingList(shoppingList, account);
         }
         return String.format("redirect:/shopping-list/%d", id);
