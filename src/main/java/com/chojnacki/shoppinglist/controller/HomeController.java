@@ -2,7 +2,7 @@ package com.chojnacki.shoppinglist.controller;
 
 import com.chojnacki.shoppinglist.model.Account;
 import com.chojnacki.shoppinglist.model.ShoppingList;
-import com.chojnacki.shoppinglist.service.ShoppingListService;
+import com.chojnacki.shoppinglist.service.JpaShoppingListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -16,10 +16,10 @@ import java.util.List;
 @RequestMapping("/")
 public class HomeController {
 
-    private final ShoppingListService shoppingListService;
+    private final JpaShoppingListService shoppingListService;
 
     @Autowired
-    public HomeController(ShoppingListService shoppingListService) {
+    public HomeController(JpaShoppingListService shoppingListService) {
         this.shoppingListService = shoppingListService;
     }
 

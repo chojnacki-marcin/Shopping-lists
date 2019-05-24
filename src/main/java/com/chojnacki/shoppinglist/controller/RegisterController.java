@@ -33,9 +33,10 @@ public class RegisterController {
 
     @PostMapping("/register")
     public String processRegistration(@Valid UserDto userDto, BindingResult bindingResult, HttpServletRequest request) throws ServletException {
-        if(bindingResult.hasErrors() || accountRepository.existsAccountByEmail(userDto.getEmail())){
+        if(bindingResult.hasErrors() ||  accountRepository.existsAccountByEmail(userDto.getEmail())){
             return "register";
         }
+
         Account account = new Account();
         account.setEmail(userDto.getEmail());
         String encryptedPassword = passwordEncoder.encode(userDto.getPassword());

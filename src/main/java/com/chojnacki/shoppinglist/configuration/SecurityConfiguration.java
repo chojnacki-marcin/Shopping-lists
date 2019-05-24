@@ -1,7 +1,7 @@
 package com.chojnacki.shoppinglist.configuration;
 
 import com.chojnacki.shoppinglist.repository.AccountRepository;
-import com.chojnacki.shoppinglist.service.AccountService;
+import com.chojnacki.shoppinglist.service.JpaAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +53,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(AccountService accountService){
+    public AuthenticationProvider authenticationProvider(JpaAccountService accountService){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(accountService);
         provider.setPasswordEncoder(passwordEncoder());
@@ -66,8 +66,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public AccountService accountUserService(AccountRepository accountRepository){
-        return new AccountService(accountRepository);
+    public JpaAccountService accountUserService(AccountRepository accountRepository){
+        return new JpaAccountService(accountRepository);
     }
 
 }

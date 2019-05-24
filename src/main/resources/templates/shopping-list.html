@@ -12,7 +12,7 @@
         </label> <br />
         <!--<label><input type="checkbox" th:field="*{items}" th:each="item : ${shoppingList.items}"></label>-->
         <!--<label><input type="checkbox" th:field="*{items}" ></label>-->
-        <button type="submit" name="addItem">Add item</button>
+        <button type="submit" class="glyphicon glyphicon-plus" name="addItem"><span class="glyphicon glyphicon-align-left" aria-hidden="true">Add item</span></button>
         <div th:each="item, itemStat : ${shoppingList.items}">
            <input type="checkbox" th:field="*{items[__${itemStat.index}__].bought}" />
             <input type="text" th:field="*{items[__${itemStat.index}__].name}">

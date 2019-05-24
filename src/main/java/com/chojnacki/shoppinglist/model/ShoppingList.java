@@ -18,7 +18,7 @@ public class ShoppingList {
     private Date recentUpdate;
 
     @ManyToOne
-    private Account account;
+    private User owner;
 
     @OneToMany
     @JoinColumn(name = "shopping_list_id")
@@ -30,12 +30,12 @@ public class ShoppingList {
         creationDate = new Date();
     }
 
-    public Account getAccount() {
-        return account;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     public long getId() {
