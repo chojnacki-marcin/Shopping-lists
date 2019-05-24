@@ -9,12 +9,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
+@RequestMapping("/register")
 public class RegisterController {
 
     private final AccountService accountService;
@@ -24,12 +26,12 @@ public class RegisterController {
         this.accountService = accountService;
     }
 
-    @GetMapping("/register")
+    @GetMapping
     public String showRegistrationForm(UserDto userDto){
         return "register";
     }
 
-    @PostMapping("/register")
+    @PostMapping
     public String processRegistration(@Valid UserDto userDto, BindingResult bindingResult, HttpServletRequest request) throws ServletException {
         if(bindingResult.hasErrors() ||  accountService.emailExists(userDto.getEmail())){
             return "register";

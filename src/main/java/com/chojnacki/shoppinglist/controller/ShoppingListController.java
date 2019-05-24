@@ -1,11 +1,13 @@
 package com.chojnacki.shoppinglist.controller;
 
 import com.chojnacki.shoppinglist.exception.ResourceNotFoundException;
+import com.chojnacki.shoppinglist.model.Account;
 import com.chojnacki.shoppinglist.model.Item;
 import com.chojnacki.shoppinglist.model.ShoppingList;
-import com.chojnacki.shoppinglist.model.User;
 import com.chojnacki.shoppinglist.service.JpaSecurityService;
 import com.chojnacki.shoppinglist.service.JpaShoppingListService;
+import com.chojnacki.shoppinglist.service.SecurityService;
+import com.chojnacki.shoppinglist.service.ShoppingListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,12 +27,12 @@ import java.util.Optional;
 @RequestMapping("/shopping-list")
 public class ShoppingListController {
 
-    private final JpaShoppingListService shoppingListService;
+    private final ShoppingListService shoppingListService;
 
-    private final JpaSecurityService securityService;
+    private final SecurityService securityService;
 
     @Autowired
-    public ShoppingListController(JpaShoppingListService shoppingListService, JpaSecurityService securityService) {
+    public ShoppingListController(ShoppingListService shoppingListService, SecurityService securityService) {
         this.shoppingListService = shoppingListService;
         this.securityService = securityService;
     }
@@ -41,14 +43,14 @@ public class ShoppingListController {
     }
 
     @PostMapping
-    public String createShoppingList(ShoppingList shoppingList, @AuthenticationPrincipal User account){
+    public String createShoppingList(ShoppingList shoppingList, @AuthenticationPrincipal Account account){
         shoppingListService.saveShoppingList(shoppingList, account);
         return String.format("redirect:/shopping-list/%d",shoppingList.getId());
     }
 
 
     @GetMapping("{id}")
-    @PreAuthorize("@jpaSecurityService.isOwner(authentication, #id)")
+    @PreAuthorize("@securityService.isOwner(authentication, #id)")
     public String showShoppingList(@PathVariable long id, Model model){
         Optional<ShoppingList> shoppingListOptional = shoppingListService.findById(id);
         if(!shoppingListOptional.isPresent()){
@@ -60,14 +62,14 @@ public class ShoppingListController {
     }
 
     @PostMapping("{id}")
-    @PreAuthorize("@jpaSecurityService.isOwner(authentication, #shoppingList.id)")
-    public String modifyShoppingList(@PathVariable long id, ShoppingList shoppingList, @AuthenticationPrincipal User account){
+    @PreAuthorize("@securityService.isOwner(authentication, #shoppingList.id)")
+    public String modifyShoppingList(@PathVariable long id, ShoppingList shoppingList, @AuthenticationPrincipal Account account){
         shoppingListService.saveShoppingList(shoppingList, account);
         return String.format("redirect:/shopping-list/%d", id);
     }
 
     @RequestMapping(value = "{id}", params = {"addItem"})
-    @PreAuthorize("@jpaSecurityService.isOwner(authentication, #shoppingList.id)")
+    @PreAuthorize("@securityService.isOwner(authentication, #shoppingList.id)")
     public String addItem(@PathVariable long id, ShoppingList shoppingList, BindingResult bindingResult){
         if(shoppingList.getItems() == null){
             shoppingList.setItems(Collections.singletonList(new Item()));
@@ -79,8 +81,8 @@ public class ShoppingListController {
     }
 
     @RequestMapping(value = "{id}", params = {"removeItem"})
-    @PreAuthorize("@jpaSecurityService.isOwner(authentication, #shoppingList.id)")
-    public String removeItem(@PathVariable long id, ShoppingList shoppingList, BindingResult bindingResult, HttpServletRequest httpServletRequest, @AuthenticationPrincipal User account){
+    @PreAuthorize("@securityService.isOwner(authentication, #shoppingList.id)")
+    public String removeItem(@PathVariable long id, ShoppingList shoppingList, BindingResult bindingResult, HttpServletRequest httpServletRequest, @AuthenticationPrincipal Account account){
         int itemNumber = Integer.valueOf(httpServletRequest.getParameter("removeItem"));
         if(shoppingList.getItems() != null && !shoppingList.getItems().isEmpty()
                 && itemNumber >= 0 && itemNumber < shoppingList.getItems().size()){

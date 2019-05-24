@@ -14,11 +14,13 @@ public class JpaAccountService implements AccountService{
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     @Autowired
-    public JpaAccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder){
+    public JpaAccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, UserService userService){
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
     }
 
     @Override
@@ -32,15 +34,15 @@ public class JpaAccountService implements AccountService{
 
 
     @Override
-    public Account createAccount(UserDto accountDto) {
+    public void createAccount(UserDto accountDto) {
         Account account = new Account();
         String encryptedPassword = passwordEncoder.encode(accountDto.getPassword());
 
         account.setEmail(accountDto.getEmail());
         account.setEncryptedPassword(encryptedPassword);
-
         accountRepository.save(account);
-        return account;
+
+        userService.createUserFromInternalAccount(account);
     }
 
     @Override

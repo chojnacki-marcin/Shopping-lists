@@ -2,7 +2,6 @@ package com.chojnacki.shoppinglist.controller;
 
 import com.chojnacki.shoppinglist.model.Account;
 import com.chojnacki.shoppinglist.model.ShoppingList;
-import com.chojnacki.shoppinglist.service.JpaShoppingListService;
 import com.chojnacki.shoppinglist.service.ShoppingListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +25,7 @@ public class HomeController {
 
     @GetMapping
     public String index(Model model, @AuthenticationPrincipal Account account){
-        List<ShoppingList> shoppingLists = shoppingListService.findAllByAccountId(account.getId());
+        List<ShoppingList> shoppingLists = shoppingListService.findAllByAccount(account);
         model.addAttribute("shoppingLists", shoppingLists);
         return "index";
     }
