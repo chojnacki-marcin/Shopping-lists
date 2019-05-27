@@ -1,6 +1,6 @@
-package com.chojnacki.shoppinglist.repository;
+package com.chojnacki.oauthserver.repository;
 
-import com.chojnacki.shoppinglist.model.Account;
+import com.chojnacki.oauthserver.model.Account;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
