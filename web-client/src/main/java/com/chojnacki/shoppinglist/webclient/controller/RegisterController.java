@@ -1,6 +1,8 @@
 package com.chojnacki.shoppinglist.webclient.controller;
 
+import com.chojnacki.shoppinglist.webclient.dto.UserDto;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -14,10 +16,10 @@ public class RegisterController {
 //        this.accountService = accountService;
 //    }
 //
-//    @GetMapping
-//    public String showRegistrationForm(UserDto userDto){
-//        return "register";
-//    }
+    @GetMapping
+    public String showRegistrationForm(UserDto userDto){
+        return "register";
+    }
 //
 //    @PostMapping
 //    public String processRegistration(@Valid UserDto userDto, BindingResult bindingResult, HttpServletRequest request) throws ServletException {
