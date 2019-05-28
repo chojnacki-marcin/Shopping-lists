@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
 @SpringBootApplication(scanBasePackages = "webclient")
-@EnableOAuth2Sso
 public class ShoppingListApplication {
 
 	public static void main(String[] args) {
