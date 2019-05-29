@@ -9,7 +9,7 @@ Application consisting of two modules:
 <ul>
   <li> Creating accounts on authorization server</li>
   <li> Single Sign On - Facebook and email </li>
-  <li> Storing data about users from different providers </li>
+  <li> Storing local data about users from different providers </li>
   <li> Creating shopping lists </li>
   <li> Managing shopping list items </li>
 </ul>
