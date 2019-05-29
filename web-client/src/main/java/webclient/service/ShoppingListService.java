@@ -14,7 +14,7 @@ public interface ShoppingListService {
     Optional<ShoppingList> findById(long id);
 
 
-    boolean isOwner(User user, long shoppingListId);
+    boolean isOwner(String userIdentifier, long shoppingListId);
 
 
     List<ShoppingList> findAllByAccount(User user);

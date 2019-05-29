@@ -13,12 +13,10 @@ import java.util.Optional;
 public class JpaShoppingListService implements ShoppingListService {
 
     private final ShoppingListRepository shoppingListRepository;
-    private final UserService userService;
 
     @Autowired
     public JpaShoppingListService(ShoppingListRepository shoppingListRepository, UserService userService) {
         this.shoppingListRepository = shoppingListRepository;
-        this.userService = userService;
     }
 
     @Override
@@ -34,9 +32,9 @@ public class JpaShoppingListService implements ShoppingListService {
 
 
     @Override
-    public boolean isOwner(User user, long shoppingListId){
+    public boolean isOwner(String userIdentifier, long shoppingListId){
         Optional<ShoppingList> result = shoppingListRepository.findById(shoppingListId);
-        return result.filter(shoppingList -> shoppingList.getOwner().getUserIdentifier().equals(user.getUserIdentifier()))
+        return result.filter(shoppingList -> shoppingList.getOwner().getUserIdentifier().equals(userIdentifier))
                 .isPresent();
     }
 

@@ -3,6 +3,7 @@ package webclient.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +17,7 @@ import webclient.model.ShoppingList;
 import webclient.model.User;
 import webclient.service.SecurityService;
 import webclient.service.ShoppingListService;
+import webclient.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
@@ -28,11 +30,13 @@ public class ShoppingListController {
     private final ShoppingListService shoppingListService;
 
     private final SecurityService securityService;
+    private final UserService userService;
 
     @Autowired
-    public ShoppingListController(ShoppingListService shoppingListService, SecurityService securityService) {
+    public ShoppingListController(ShoppingListService shoppingListService, SecurityService securityService, UserService userService) {
         this.shoppingListService = shoppingListService;
         this.securityService = securityService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -41,17 +45,19 @@ public class ShoppingListController {
     }
 
     @PostMapping
-    public String createShoppingList(ShoppingList shoppingList, @AuthenticationPrincipal User user){
+    public String createShoppingList(ShoppingList shoppingList, OAuth2Authentication authentication){
+        var user = userService.getUserFromAuthentication(authentication);
+
         shoppingListService.saveShoppingList(shoppingList, user);
         return String.format("redirect:/shopping-list/%d",shoppingList.getId());
     }
 
 
     @GetMapping("{id}")
-    @PreAuthorize("@securityService.isOwner(authentication, #id)")
-    public String showShoppingList(@PathVariable long id, Model model){
+    @PreAuthorize("@securityService.isOwner(#authentication, #id)")
+    public String showShoppingList(@PathVariable long id, Model model, OAuth2Authentication authentication){
         Optional<ShoppingList> shoppingListOptional = shoppingListService.findById(id);
-        if(!shoppingListOptional.isPresent()){
+        if(shoppingListOptional.isEmpty()){
             throw new ResourceNotFoundException();
         }
         ShoppingList shoppingList = shoppingListOptional.get();
@@ -60,15 +66,18 @@ public class ShoppingListController {
     }
 
     @PostMapping("{id}")
-    @PreAuthorize("@securityService.isOwner(authentication, #shoppingList.id)")
-    public String modifyShoppingList(@PathVariable long id, ShoppingList shoppingList, @AuthenticationPrincipal User user){
+    @PreAuthorize("@securityService.isOwner(#authentication, #shoppingList.id)")
+    public String modifyShoppingList(@PathVariable long id, ShoppingList shoppingList, OAuth2Authentication authentication){
+        var user = userService.getUserFromAuthentication(authentication);
+
         shoppingListService.saveShoppingList(shoppingList, user);
         return String.format("redirect:/shopping-list/%d", id);
     }
 
     @RequestMapping(value = "{id}", params = {"addItem"})
-    @PreAuthorize("@securityService.isOwner(authentication, #shoppingList.id)")
-    public String addItem(@PathVariable long id, ShoppingList shoppingList, BindingResult bindingResult){
+    @PreAuthorize("@securityService.isOwner(#authentication, #shoppingList.id)")
+    public String addItem(@PathVariable long id, ShoppingList shoppingList, BindingResult bindingResult,
+                          OAuth2Authentication authentication){
         if(shoppingList.getItems() == null){
             shoppingList.setItems(Collections.singletonList(new Item()));
         }
@@ -79,9 +88,10 @@ public class ShoppingListController {
     }
 
     @RequestMapping(value = "{id}", params = {"removeItem"})
-    @PreAuthorize("@securityService.isOwner(authentication, #shoppingList.id)")
+    @PreAuthorize("@securityService.isOwner(#authentication, #shoppingList.id)")
     public String removeItem(@PathVariable long id, ShoppingList shoppingList, BindingResult bindingResult,
-                             HttpServletRequest httpServletRequest, @AuthenticationPrincipal User user){
+                             HttpServletRequest httpServletRequest, @AuthenticationPrincipal User user,
+                             OAuth2Authentication authentication){
         int itemNumber = Integer.valueOf(httpServletRequest.getParameter("removeItem"));
         if(shoppingList.getItems() != null && !shoppingList.getItems().isEmpty()
                 && itemNumber >= 0 && itemNumber < shoppingList.getItems().size()){

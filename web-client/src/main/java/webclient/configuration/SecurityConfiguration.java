@@ -1,12 +1,12 @@
 package webclient.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -22,9 +22,10 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilt
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.filter.CompositeFilter;
+import webclient.model.ProviderType;
 
 import javax.annotation.Resource;
 import javax.servlet.Filter;
@@ -38,6 +39,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Resource(name = "accessTokenRequest")
     private AccessTokenRequest accessTokenRequest;
+
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    public SecurityConfiguration(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     @Bean
     @Qualifier("clientContext")
@@ -60,50 +67,43 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .logout().logoutSuccessUrl("/login").permitAll()
                 .and()
                     .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
-//        http
-//                .authorizeRequests().antMatchers("/login/**", "/webjars/**", "/error**").permitAll()
-//                .and()
-//                .authorizeRequests().anyRequest().authenticated()
-//                .and()
-////                .formLogin().loginPage("/login")
-////                .and()
-//                .logout().permitAll()
-//                .and()
-//                .antMatcher("/**")
-//                .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
     }
 
     private Filter ssoFilter() {
         CompositeFilter filter = new CompositeFilter();
-        var emailFilter = ssoFilter(email(), "/login/email");
-        var facebookFilter = ssoFilter(facebook(), "/login/facebook");
+        var emailFilter = ssoFilter(email(), "/login/email", ProviderType.EMAIL);
+        var facebookFilter = ssoFilter(facebook(), "/login/facebook", ProviderType.FACEBOOK);
         var filters = Arrays.asList(emailFilter, facebookFilter);
 
         filter.setFilters(filters);
         return filter;
     }
 
-    private Filter ssoFilter(ClientResources client, String path) {
-        OAuth2ClientAuthenticationProcessingFilter facebookFilter = new OAuth2ClientAuthenticationProcessingFilter(path);
+    private Filter ssoFilter(ClientResources client, String path, ProviderType provider) {
+        OAuth2ClientAuthenticationProcessingFilter filter =
+                new OAuth2ClientAuthenticationProcessingFilter(path);
         OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), clientContext());
-        facebookFilter.setRestTemplate(template);
+        filter.setRestTemplate(template);
         UserInfoTokenServices tokenServices = new UserInfoTokenServices(client.getResource().getUserInfoUri(),
                 client.getClient().getClientId());
         tokenServices.setRestTemplate(template);
-        facebookFilter.setTokenServices(tokenServices);
-        return facebookFilter;
+        filter.setTokenServices(tokenServices);
+        filter.setApplicationEventPublisher(applicationEventPublisher);
+        return filter;
     }
+
+
 
     @Bean
     @ConfigurationProperties("email")
     public ClientResources email() {
-        return new ClientResources();
+        return new ClientResources(ProviderType.EMAIL);
     }
 
     @Bean
     @ConfigurationProperties("facebook")
     public ClientResources facebook() {
-        return new ClientResources();
+        return new ClientResources(ProviderType.FACEBOOK);
     }
 
 
@@ -115,7 +115,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return registration;
     }
 
-    private static class ClientResources{
+    public static class ClientResources{
+
+        private ProviderType providerType;
 
         @NestedConfigurationProperty
         private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
@@ -123,12 +125,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         @NestedConfigurationProperty
         private ResourceServerProperties resource = new ResourceServerProperties();
 
+        public ClientResources(ProviderType providerType) {
+            this.providerType = providerType;
+        }
+
         public AuthorizationCodeResourceDetails getClient() {
             return client;
         }
 
         public ResourceServerProperties getResource() {
             return resource;
+        }
+
+        public ProviderType getProviderType() {
+            return providerType;
         }
     }
 }
