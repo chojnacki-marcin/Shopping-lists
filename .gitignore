@@ -26,3 +26,5 @@
 /.nb-gradle/
 
 .filter-values.properties
+.local.properties
+.ouath.properties

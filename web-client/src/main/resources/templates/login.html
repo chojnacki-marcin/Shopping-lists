@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{shared/layout.html}">
+<head>
+    <title>Sign in</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="row mt-5">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <a th:href="@{/login/facebook}">Login with facebook</a>
+                </div>
+            </div>
+            <div class="card bg-light">
+                <div class="card-body">
+                    <a th:href="@{/login/email}">Login with email</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+</body>
+</html>

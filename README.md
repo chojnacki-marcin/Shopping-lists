@@ -3,7 +3,7 @@ Sample web application implemented with Spring.
 
 <h2>Features</h2>
 <ul>
-<li> Creating user accounts</li>
+<li> Creating owner accounts</li>
 <li> Securing controller methods </li>
 <li> Creating shopping lists </li>
 <li> Managing shopping list items </li>
